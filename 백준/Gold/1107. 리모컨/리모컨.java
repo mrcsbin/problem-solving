@@ -4,35 +4,29 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int n, m;
-    static boolean[] broken;
+    static int n, m, mask, answer;
+
+    private static int calculateMinCount(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if ((mask & (1 << str.charAt(i) - '0')) != 0) return Integer.MAX_VALUE;
+        }
+        return str.length() + Math.abs(n - Integer.parseInt(str));
+    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         n = Integer.parseInt(br.readLine());
         m = Integer.parseInt(br.readLine());
-        broken = new boolean[10];
         if (m > 0) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             for (int i = 0; i < m; i++) {
-                broken[Integer.parseInt(st.nextToken())] = true;
+                mask |= (1 << Integer.parseInt(st.nextToken()));
             }
         }
 
-        int answer = Math.abs(n - 100);
+        answer = Math.abs(n - 100);
         for (int i = 0; i < 1000000; i++) {
-            String str = String.valueOf(i);
-            boolean isValid = true;
-            for (char ch : str.toCharArray()) {
-                if (broken[ch - '0']) {
-                    isValid = false;
-                    break;
-                }
-            }
-            if (isValid) {
-                int count = str.length() + Math.abs(i - n);
-                answer = Math.min(answer, count);
-            }
+            answer = Math.min(answer, calculateMinCount(String.valueOf(i)));
         }
 
         System.out.println(answer);
