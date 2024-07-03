@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -34,9 +35,11 @@ public class Main {
             dfs(i);
         }
 
+        StringBuilder sb = new StringBuilder();
         for (int i = 2; i <= n; i++) {
-            System.out.println(root[i]);
+            sb.append(root[i]).append("\n");
         }
+        System.out.println(sb);
     }
 
     private static void dfs(int node) {
