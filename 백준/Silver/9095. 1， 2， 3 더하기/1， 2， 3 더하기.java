@@ -1,21 +1,35 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.*;
+import java.io.*;
+/*
+중복순열
+ */
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int t = Integer.parseInt(br.readLine());
-        while (t-- > 0) {
-            int n = Integer.parseInt(br.readLine());
-            int[] dp = new int[n + 1];
-            if (n >= 1) dp[1] = 1;
-            if (n >= 2) dp[2] = 2;
-            if (n >= 3) dp[3] = 4;
-            for (int i = 4; i <= n; i++) {
-                dp[i] = dp[i - 1] + dp[i - 2] + dp[i - 3];
-            }
-            System.out.println(dp[n]);
+    static int N;
+    static int cnt;
+    static void findCaseWith123(int sum){
+        if(sum > N)
+            return;
+        if(sum == N) {
+            cnt++;
+            return;
         }
+
+        for(int i = 1; i < 4; i++) {
+            findCaseWith123(sum + i);
+        }
+    }
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        int T = Integer.parseInt(br.readLine());
+        for (int tc = 0; tc < T; tc++) {
+            cnt = 0;
+            N = Integer.parseInt(br.readLine());
+            findCaseWith123(0);
+            sb.append(cnt).append("\n");
+        }
+
+        System.out.println(sb.toString());
     }
 }
