@@ -20,14 +20,11 @@ public class Main {
 
         int left = 1, right = 1;
         len = N + 1;
-        while(right <= N) {
+        while(left <= right && right <= N) {
             if (partSum[right] - partSum[left - 1] >= S) {
                 len = Math.min(right - left + 1, len);
                 left++;
             } else {
-                right++;
-            }
-            if (left > right) {
                 right++;
             }
         }
