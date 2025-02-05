@@ -1,97 +1,78 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static class Edge implements Comparable<Edge> {
-        int vertex;
-        int weight;
+    static int n, e;
+    static List<Node>[] graph;
 
-        Edge(int vertex, int weight) {
-            this.vertex = vertex;
-            this.weight = weight;
-        }
+    static class Node {
+        int idx;
+        int cost;
 
-        public int compareTo(Edge o) {
-            return Integer.compare(this.weight, o.weight);
+        Node(int idx, int cost) {
+            this.idx = idx;
+            this.cost = cost;
         }
     }
 
-    static int N, E;
-    static int v1, v2;
-    static List<Edge>[] edges;
-    static boolean[] v;
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        E = Integer.parseInt(st.nextToken());
-        edges = new ArrayList[N + 1];
+        n = Integer.parseInt(st.nextToken());
+        e = Integer.parseInt(st.nextToken());
 
-        for (int n = 0; n < N + 1; n++) {
-            edges[n] = new ArrayList<>();
+        graph = new ArrayList[n + 1];
+        for (int i = 1; i <= n; i++) {
+            graph[i] = new ArrayList<>();
         }
 
-        for (int e = 0; e < E; e++) {
+        while (e-- > 0) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-            edges[a].add(new Edge(b, c));
-            edges[b].add(new Edge(a, c));
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            graph[u].add(new Node(v, w));
+            graph[v].add(new Node(u, w));
         }
 
         st = new StringTokenizer(br.readLine());
-        v1 = Integer.parseInt(st.nextToken());
-        v2 = Integer.parseInt(st.nextToken());
-        int from1to2 = dijk(v1, v2);
-        int min = -1;
+        int v1 = Integer.parseInt(st.nextToken());
+        int v2 = Integer.parseInt(st.nextToken());
 
-        if (from1to2 != -1) {
-            int toV1 = dijk(1, v1);
-            int toV2 = dijk(1, v2);
+        int[] dist = dijkstra(1);
+        int[] v1Dist = dijkstra(v1);
+        int[] v2Dist = dijkstra(v2);
 
-            if (toV1 != -1) {
-                int fromV2 = dijk(v2, N);
-                if (fromV2 != -1)
-                    min = from1to2 + toV1 + fromV2;
-            }
+        int d1 = dist[v1] + v1Dist[v2] + v2Dist[n];
+        int d2 = dist[v2] + v2Dist[v1] + v1Dist[n];
 
-            if (toV2 != -1) {
-                int fromV1 = dijk(v1, N);
-                if (fromV1 != -1) {
-                    if (min != -1)
-                        min = Math.min(min, from1to2 + toV2 + fromV1);
-                    else
-                        min = from1to2 + toV2 + fromV1;
+        int minCost = Math.min(d1, d2);
+
+        System.out.println(minCost <= 0 || minCost >= 1_000_000_000 ? -1 : minCost);
+    }
+
+    private static int[] dijkstra(int start) {
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        PriorityQueue<Node> pq = new PriorityQueue<>((o1, o2) -> o1.cost - o2.cost);
+        pq.offer(new Node(start, 0));
+        dist[start] = 0;
+        while (!pq.isEmpty()) {
+            Node now = pq.poll();
+
+            if (dist[now.idx] < now.cost) continue;
+
+            for (Node next : graph[now.idx]) {
+                int nCost = now.cost + next.cost;
+                if (dist[next.idx] > nCost) {
+                    dist[next.idx] = nCost;
+                    pq.offer(new Node(next.idx, nCost));
                 }
             }
         }
 
-        System.out.println(min);
-
-    }
-
-    static int dijk(int start, int end) {
-        v = new boolean[N + 1];
-        PriorityQueue<Edge> pq = new PriorityQueue<>();
-        pq.add(new Edge(start, 0));
-        while (!pq.isEmpty()) {
-            Edge now = pq.poll();
-            if (now.vertex == end) {
-                return now.weight;
-            }
-
-            if (v[now.vertex])
-                continue;
-            v[now.vertex] = true;
-
-            for (Edge e : edges[now.vertex]) {
-                if (!v[e.vertex])
-                    pq.add(new Edge(e.vertex, e.weight + now.weight));
-            }
-        }
-
-        return -1;
+        return dist;
     }
 }
