@@ -1,49 +1,49 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int n, k, dist[];
-    static int[] dx = {-1, 1, 2};
-
-    static void bfs(int x) {
-        Queue<Integer> queue = new ArrayDeque<>();
-        queue.offer(x);
-        dist[x] = 0;
-        while (!queue.isEmpty()) {
-            x = queue.poll();
-            if (x == k) return;
-            for (int i = 0; i < 3; i++) {
-                int nx = x + dx[i];
-                if (i == 2) {
-                    nx = x * dx[i];
-                    if (isIn(nx) && dist[nx] > dist[x]) {
-                        dist[nx] = dist[x];
-                        queue.offer(nx);
-                    }
-                    continue;
-                }
-                if (isIn(nx) && dist[nx] > dist[x] + 1) {
-                    dist[nx] = dist[x] + 1;
-                    queue.offer(nx);
-                }
-            }
-        }
-    }
-
-    static boolean isIn(int x) {
-        return x >= 0 && x <= 100_000;
-    }
+    static int n, k;
+    static int[] dist;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
         k = Integer.parseInt(st.nextToken());
-        dist = new int[100_001];
+        dist = new int[100001];
         Arrays.fill(dist, Integer.MAX_VALUE);
-        bfs(n);
+
+        bfs();
+
         System.out.println(dist[k]);
+    }
+
+    private static void bfs() {
+        Queue<int[]> queue = new ArrayDeque<>();
+        queue.offer(new int[]{n, 0});
+        dist[n] = 0;
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+
+            if (current[0] == k) return;
+
+            int[][] nextPositions = {{current[0] + 1, current[1] + 1}, {current[0] - 1, current[1] + 1}, {current[0] * 2, current[1]}};
+
+            for (int[] next : nextPositions) {
+                if (isIn(next[0]) && dist[next[0]] > next[1]) {
+                    queue.offer(new int[]{next[0], next[1]});
+                    dist[next[0]] = next[1];
+                }
+            }
+        }
+    }
+
+    private static boolean isIn(int x) {
+        return x >= 0 && x <= 100000;
     }
 }
