@@ -1,32 +1,36 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    static int n;
+    static int[] arr;
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine());
-        int[] arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        n = Integer.parseInt(br.readLine());
+        arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
         Arrays.sort(arr);
-        int answer = 0;
+
+        int count = 0;
         for (int i = 0; i < n; i++) {
-            int num = arr[i];
             int l = 0;
-            int r = n - 1;
+            int r = arr.length - 1;
             while (l < r) {
                 int sum = arr[l] + arr[r];
-                if (sum == num) {
-                    if (l == i) l++;
-                    else if (r == i) r--;
+                if (sum == arr[i]) {
+                    if (i == l) l++;
+                    else if (i == r) r--;
                     else {
-                        answer++;
+                        count++;
                         break;
                     }
-                }
-                if (sum < num) l++;
-                else if (sum > num) r--;
+                } else if (sum > arr[i]) r--;
+                else if (sum < arr[i]) l++;
             }
         }
-        System.out.println(answer);
+
+        System.out.println(count);
     }
 }
