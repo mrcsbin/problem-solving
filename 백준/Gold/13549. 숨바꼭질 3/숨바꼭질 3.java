@@ -1,44 +1,47 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.StringTokenizer;
 
 public class Main {
     static int n, k;
     static int[] dist;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
         k = Integer.parseInt(st.nextToken());
+
         dist = new int[100001];
         Arrays.fill(dist, Integer.MAX_VALUE);
 
         bfs();
-
         System.out.println(dist[k]);
     }
 
     private static void bfs() {
-        Queue<int[]> queue = new ArrayDeque<>();
-        queue.offer(new int[]{n, 0});
+        Deque<Integer> deque = new ArrayDeque<>();
         dist[n] = 0;
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
+        deque.offer(n);
+        while (!deque.isEmpty()) {
+            int now = deque.poll();
 
-            if (current[0] == k) return;
+            if (isIn(now * 2) && dist[now * 2] > dist[now]) {
+                dist[now * 2] = dist[now];
+                deque.offerFirst(now * 2);
+            }
 
-            int[][] nextPositions = {{current[0] + 1, current[1] + 1}, {current[0] - 1, current[1] + 1}, {current[0] * 2, current[1]}};
+            if (isIn(now + 1) && dist[now + 1] > dist[now] + 1) {
+                dist[now + 1] = dist[now] + 1;
+                deque.offerLast(now + 1);
+            }
 
-            for (int[] next : nextPositions) {
-                if (isIn(next[0]) && dist[next[0]] > next[1]) {
-                    queue.offer(new int[]{next[0], next[1]});
-                    dist[next[0]] = next[1];
-                }
+            if (isIn(now - 1) && dist[now - 1] > dist[now] + 1) {
+                dist[now - 1] = dist[now] + 1;
+                deque.offerLast(now - 1);
             }
         }
     }
