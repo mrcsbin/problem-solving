@@ -7,10 +7,10 @@ import java.util.StringTokenizer;
 
 public class Main {
     static int n, m, x1, y1, x2, y2;
-    static int[][] dist;
-    static char[][] map;
     static int[] dx = {-1, 1, 0, 0};
     static int[] dy = {0, 0, -1, 1};
+    static char[][] map;
+    static int[][] dist;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -31,10 +31,12 @@ public class Main {
             Arrays.fill(dist[i], Integer.MAX_VALUE);
         }
 
-        System.out.println(bfs());
+        bfs();
+
+        System.out.println(dist[x2][y2]);
     }
 
-    private static int bfs() {
+    private static void bfs() {
         Deque<int[]> deque = new ArrayDeque<>();
         deque.offer(new int[]{x1, y1});
         dist[x1][y1] = 0;
@@ -43,14 +45,13 @@ public class Main {
             int x = current[0];
             int y = current[1];
 
-            if (x == x2 && y == y2) return dist[x2][y2] + 1;
-
             for (int d = 0; d < 4; d++) {
                 int nx = x + dx[d];
                 int ny = y + dy[d];
 
                 if (isIn(nx, ny)) {
-                    int cost = map[nx][ny] == '1' ? 1 : 0;
+                    int cost = map[nx][ny] == '0' ? 0 : 1;
+
                     if (dist[nx][ny] > dist[x][y] + cost) {
                         dist[nx][ny] = dist[x][y] + cost;
                         if (cost == 0) deque.offerFirst(new int[]{nx, ny});
@@ -59,8 +60,6 @@ public class Main {
                 }
             }
         }
-
-        return -1;
     }
 
     private static boolean isIn(int x, int y) {
